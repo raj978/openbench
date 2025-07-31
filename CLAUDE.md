@@ -60,6 +60,15 @@ bench eval mmlu --model groq/llama-3.1-70b --limit 10
 bench view
 ```
 
+### Publishing to PyPI
+```bash
+# Build the package
+uv build
+
+# Publish to PyPI (requires PyPI API token)
+uv publish
+```
+
 ## Architecture Overview
 
 ### Project Structure
