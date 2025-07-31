@@ -2,6 +2,7 @@
 
 **Provider-agnostic, open-source evaluation infrastructure for language models** 🚀
 
+[![PyPI version](https://badge.fury.io/py/openbench.svg)](https://badge.fury.io/py/openbench)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -24,12 +25,10 @@ We're building in public! This is an alpha release - expect rapid iteration. The
 **Prerequisite**: [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ```bash
-# Clone and setup (30 seconds)
-git clone https://github.com/groq/openbench && cd openbench
-uv venv && uv sync
-
-# Activate the environment
+# Create a virtual environment and install OpenBench (30 seconds)
+uv venv
 source .venv/bin/activate
+uv pip install openbench
 
 # Set your API key (any provider!)
 export GROQ_API_KEY=your_key  # or OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.
@@ -162,6 +161,8 @@ should fix the issue. The full HuggingFace documentation can be found [on the Hu
 
 ## Development
 
+For development work, you'll need to clone the repository:
+
 ```bash
 # Clone the repo
 git clone https://github.com/groq/openbench.git
@@ -169,6 +170,7 @@ cd openbench
 
 # Setup with UV
 uv venv && uv sync --dev
+source .venv/bin/activate
 
 # Run tests
 pytest
