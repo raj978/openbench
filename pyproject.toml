@@ -7,6 +7,8 @@ name = "openbench"
 version = "0.0.0"
 requires-python = ">=3.10"
 description = "OpenBench - open source, replicable, and standardized evaluation infrastructure"
+readme = "README.md"
+license = {text = "MIT"}
 authors = [
     { name="Aarush Sah" },
     { name="Groq" }
@@ -19,6 +21,10 @@ dependencies = [
     "pydantic-settings==2.9.1",
     "typer==0.15.3",
 ]
+
+[project.urls]
+Homepage = "https://github.com/groq/openbench"
+Repository = "https://github.com/groq/openbench"
 
 [project.scripts]
 bench = "openbench._cli:main"
@@ -60,4 +66,3 @@ dev = [
     "pytest-cov>=4.1.0",
     "ruff>=0.11.9",
 ]
-
