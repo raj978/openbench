@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write   # allow tagging and releases
   pull-requests: write   # allow managing release PRs
+  issues: write   # allow creating and managing labels
 
 concurrency:
   group: release-please
