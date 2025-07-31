@@ -41,7 +41,7 @@ bench eval mmlu --model groq/llama-3.3-70b-versatile --limit 10
 bench view
 ```
 
-https://github.com/user-attachments/assets/e99e4628-f1f5-48e4-9df2-ae28b86168c2
+https://github.com/user-attachments/assets/ce5e24a8-44bb-42eb-91b1-03e4a4be5c18
 
 ## Using Different Providers
 
