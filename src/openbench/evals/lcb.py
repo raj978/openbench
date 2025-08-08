@@ -581,7 +581,7 @@ def test_output_prediction_scorer() -> Scorer:
 
 @task
 def lcb(
-    scenario: str = None,
+    scenario: str = "codegeneration",
     release_version: str = "release_v6",
     start_date: str = None,
     end_date: str = None,
@@ -590,6 +590,8 @@ def lcb(
     """
     Inspect Task implementation for LCB
     """
+
+    # TODO: if needed in the future, make scenario required (not optional)
 
     global START_DATE
     global END_DATE
