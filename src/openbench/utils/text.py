@@ -1,3 +1,12 @@
+import json
+import tiktoken
+from inspect_ai.model import (
+    ChatMessageUser,
+    ChatMessageAssistant,
+    ChatMessageSystem,
+    ChatMessage,
+)
+
 """Text processing utilities for openbench.
 
 This module contains helper functions for processing and normalizing text in various
@@ -326,3 +335,47 @@ def extract_confidence_score(response: str, default: int = 100) -> int:
             return min(100, max(0, int(value)))
 
     return default
+
+
+def str_to_chat_messages(messages_str: str) -> list[ChatMessage]:
+    """
+    Convert a string to a list of chat messages.
+
+    Parameters:
+        messages_str (str): The string to convert
+
+    Returns:
+        list[ChatMessage]: The list of chat messages
+    """
+    message_mapping = {
+        "system": ChatMessageSystem,
+        "user": ChatMessageUser,
+        "assistant": ChatMessageAssistant,
+    }
+    messages = json.loads(messages_str)
+    return [
+        message_mapping[message["role"]](content=message["content"])
+        for message in messages
+    ]
+
+
+def get_token_count(text: str, model: str = "gpt-4o") -> int:
+    """
+    Get the token count of a text.
+    """
+    return len(tiktoken.encoding_for_model(model).encode(text))
+
+
+def get_chatml_tok_cnt(chat_messages_str: str) -> int:
+    """
+    Get the token count of a string in chatml format.
+    """
+    messages = json.loads(chat_messages_str)
+    total = 3
+    for message in messages:
+        total += 3
+        for key, value in message.items():
+            total += get_token_count(value)
+            if key == "name":
+                total += 1
+    return total
