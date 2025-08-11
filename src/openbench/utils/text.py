@@ -1,3 +1,12 @@
+import json
+import tiktoken
+from inspect_ai.model import (
+    ChatMessageUser,
+    ChatMessageAssistant,
+    ChatMessageSystem,
+    ChatMessage,
+)
+
 """Text processing utilities for openbench.
 
 This module contains helper functions for processing and normalizing text in various
@@ -281,3 +290,92 @@ def normalize_number(value: str) -> str:
         value = value.rstrip("0").rstrip(".")
 
     return value
+
+
+def extract_confidence_score(response: str, default: int = 100) -> int:
+    """
+    Extract a confidence score from model response.
+
+    Looks for patterns like "Confidence: 85%", "confidence: 0.85", etc.
+    Handles both percentage (0-100) and decimal (0-1) formats.
+
+    Parameters:
+        response (str): Model response potentially containing confidence score
+        default (int): Default confidence to return if none found (default: 100)
+
+    Returns:
+        int: Confidence score between 0 and 100
+
+    Examples:
+        >>> extract_confidence_score("Answer: A\\nConfidence: 85%")
+        85
+        >>> extract_confidence_score("I am 0.95 confident in this answer")
+        95
+        >>> extract_confidence_score("No confidence mentioned")
+        100
+    """
+    import re
+
+    patterns = [
+        r"[Cc]onfidence:\s*(\d+(?:\.\d+)?)\s*%",  # Confidence: 85%
+        r"[Cc]onfidence:\s*(\d+)",  # Confidence: 85
+        r"[Cc]onfidence:\s*(0?\.\d+)",  # Confidence: 0.85
+        r"(\d+(?:\.\d+)?)\s*%\s*[Cc]onfident",  # 85% confident
+        r"(0?\.\d+)\s*[Cc]onfident",  # 0.85 confident
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, response)
+        if match:
+            value = float(match.group(1))
+            # Convert to percentage if it's a decimal
+            if value <= 1:
+                return int(value * 100)
+            # Clamp to valid range
+            return min(100, max(0, int(value)))
+
+    return default
+
+
+def str_to_chat_messages(messages_str: str) -> list[ChatMessage]:
+    """
+    Convert a string to a list of chat messages.
+
+    Parameters:
+        messages_str (str): The string to convert
+
+    Returns:
+        list[ChatMessage]: The list of chat messages
+    """
+    message_mapping = {
+        "system": ChatMessageSystem,
+        "user": ChatMessageUser,
+        "assistant": ChatMessageAssistant,
+    }
+    messages = json.loads(messages_str)
+    return [
+        message_mapping[message["role"]](content=message["content"])
+        for message in messages
+    ]
+
+
+def get_token_count(text: str, model: str = "gpt-4o") -> int:
+    """
+    Get the token count of a text.
+    """
+    return len(tiktoken.encoding_for_model(model).encode(text))
+
+
+def get_chatml_tok_cnt(chat_messages_str: str) -> int:
+    """
+    Get the token count of a string in chatml format.
+    """
+    messages = json.loads(chat_messages_str)
+    total = 3
+    for message in messages:
+        total += 3
+        for key, value in message.items():
+            total += get_token_count(value)
+            if key == "name":
+                total += 1
+    return total
