@@ -361,10 +361,10 @@ def custom_solver(SCENARIO: str):
                 ],
             )
 
-            model_str = resp.choices[0].message.content
+            model_str_raw: Any = resp.choices[0].message.content
 
             try:
-                model_str: Any = model_str.split("```python")[1].split("```")[0]
+                model_str: Any = model_str_raw.split("```python")[1].split("```")[0]
                 for test_case in jsonlib.loads(state.metadata["public_test_cases"]):
                     model_str += f"\nassert str(foo('''{test_case['input'].strip()}''')) == '''{test_case['output'].strip()}'''"
             except IndexError:
@@ -392,16 +392,18 @@ def custom_solver(SCENARIO: str):
                     ],
                 )
 
-                model_str = resp.choices[0].message.content
+                model_str_raw_2: Any = resp.choices[0].message.content
 
                 try:
-                    model_str: Any = model_str.split("```python")[1].split("```")[0]
+                    model_str_2: Any = model_str_raw_2.split("```python")[1].split(
+                        "```"
+                    )[0]
                     for test_case in jsonlib.loads(state.metadata["public_test_cases"]):
-                        model_str += f"\nassert str(foo('''{test_case['input'].strip()}''')) == '''{test_case['output'].strip()}'''"
+                        model_str_2 += f"\nassert str(foo('''{test_case['input'].strip()}''')) == '''{test_case['output'].strip()}'''"
                 except IndexError:
-                    model_str = ""
+                    model_str_2 = ""
 
-                state.metadata["generated_code"] = model_str
+                state.metadata["generated_code"] = model_str_2
 
                 return state
 
