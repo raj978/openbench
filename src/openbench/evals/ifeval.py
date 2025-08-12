@@ -26,9 +26,6 @@ from openbench.datasets.ifeval import get_ifeval_dataset
 from openbench.scorers.ifeval.scorer import custom_scorer
 
 
-
-
-
 @solver
 def custom_solver() -> Solver:
     """Custom solver for IFEval."""

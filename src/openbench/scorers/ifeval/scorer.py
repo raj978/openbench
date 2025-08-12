@@ -1,7 +1,6 @@
 from inspect_ai.scorer import scorer, Score, Scorer, accuracy, stderr, Target
 
 
-
 @scorer(metrics=[accuracy(), stderr()])
 def custom_scorer(scorer_type: str) -> Scorer:
     """Custom scorer for IFEval."""
