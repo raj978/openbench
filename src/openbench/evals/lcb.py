@@ -21,7 +21,7 @@ from inspect_ai.solver import solver, TaskState, Generate
 import json as jsonlib
 from inspect_ai.model import ChatMessageUser
 from inspect_ai.util import sandbox
-from typing import Union
+from typing import Union, Any
 
 from openbench.scorers.lcb import custom_scorer, test_output_prediction_scorer
 from openbench.datasets.lcb import (
@@ -276,7 +276,7 @@ entired fixed program within code delimiters only for once.
 
 
 def create_code_generation_prompt(
-    question_content: str, starter_code: Union[str, None] = None
+    question_content: Any, starter_code: Union[str, None] = None
 ):
     FORMATTING_MESSAGE = ""
     FORMATTING_WITHOUT_STARTER_MESSAGE = """Only generate a function that accepts a single input parameter,
@@ -480,8 +480,8 @@ def test_output_prediction_solver():
 def lcb(
     scenario: str = "codegeneration",
     release_version: str = "release_v6",
-    start_date: str = None,
-    end_date: str = None,
+    start_date: Union[str, None] = None,
+    end_date: Union[str, None] = None,
     sandbox: str = "local",
 ) -> Task:
     """
