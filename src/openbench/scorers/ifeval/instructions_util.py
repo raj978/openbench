@@ -24,7 +24,8 @@ import random
 import re
 
 import immutabledict
-import nltk
+import nltk  # type: ignore
+from typing import Any
 
 """Utility library of instructions."""
 
@@ -1558,7 +1559,7 @@ WORD_LIST = [
 ]  # pylint: disable=line-too-long
 
 # ISO 639-1 codes to language names.
-LANGUAGE_CODES = immutabledict.immutabledict(
+LANGUAGE_CODES: Any = immutabledict.immutabledict(
     {
         "en": "English",
         "es": "Spanish",

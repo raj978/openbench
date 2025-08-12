@@ -25,7 +25,7 @@ import re
 import string
 from typing import Dict, Optional, Sequence, Union
 
-import langdetect
+import langdetect  # type: ignore
 
 from openbench.scorers.ifeval import instructions_util
 
