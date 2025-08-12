@@ -332,6 +332,14 @@ BENCHMARKS = {
         module_path="openbench.evals.lcb",
         function_name="lcb",
     ),
+    "ifeval": BenchmarkMetadata(
+        name="IFEval",
+        description="IFEval",
+        category="core",
+        tags=["instruction-following"],
+        module_path="openbench.evals.ifeval",
+        function_name="ifeval",
+    ),
 }
 
 
