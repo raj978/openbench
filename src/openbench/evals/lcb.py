@@ -8,21 +8,26 @@ Koushik Sen, Ion Stoica
 Based on: https://livecodebench.github.io/
 
 # run code generation
-bench eval lcb --model "groq/llama-3.1-8b-instant" --T scenario=code_generation
+bench eval lcb --model "groq/llama-3.1-8b-instant" --T scenario=code_generation,release_version="release_version"
 
-Please refer to the README for more scenarios to evaluate.
+Please refer to https://huggingface.co/datasets/livecodebench/code_generation_lite
+for the release version to use.
 """
 
 from inspect_ai import Task, task
 from inspect_ai.model import GenerateConfig, get_model
-from inspect_ai.dataset import hf_dataset, Sample
-from inspect_ai.scorer import scorer, Score, Scorer, accuracy, stderr
+from inspect_ai.dataset import hf_dataset
 from inspect_ai.solver import solver, TaskState, Generate
 import json as jsonlib
-from typing import Any
 from inspect_ai.model import ChatMessageUser
-from inspect_ai.util import ExecResult, sandbox
+from inspect_ai.util import sandbox
 
+from openbench.scorers.lcb import custom_scorer, test_output_prediction_scorer
+from openbench.datasets.lcb import (
+    record_to_sample_for_code_generation,
+    record_to_sample_for_code_execution,
+    record_to_sample_for_test_output_prediction,
+)
 
 CODE_EXECUTION_PROMPT_WITH_COT = """
 You are given a Python function and an assertion containing an input to the function.
@@ -181,72 +186,9 @@ assert {input} == ??
 
 VERIFY_TIMEOUT = 30
 
-
-VERIFY_TIMEOUT = 30
-
 START_DATE: str = None
 END_DATE: str = None
 SCENARIO: str = None
-
-
-def record_to_sample_for_code_generation(
-    record: dict[str, Any], start_date: str = None, end_date: str = None
-) -> Sample:
-    metadata = {
-        "public_test_cases": record["public_test_cases"],
-        "question_id": record["question_id"],
-        "contest_id": record["contest_id"],
-        "contest_date": record["contest_date"],
-        "starter_code": record["starter_code"],
-        "difficulty": record["difficulty"],
-        "platform": record["platform"],
-    }
-    if (START_DATE is None) and (END_DATE is None):
-        return Sample(input=record["question_content"], metadata=metadata)
-    if (START_DATE is not None) and (END_DATE is None):
-        if metadata["contest_date"] > START_DATE:
-            return Sample(input=record["question_content"], metadata=metadata)
-    if (START_DATE is None) and (END_DATE is not None):
-        if metadata["contest_date"] < END_DATE:
-            return Sample(input=record["question_content"], metadata=metadata)
-    if (START_DATE is not None) and (END_DATE is not None):
-        if START_DATE < metadata["contest_date"] > END_DATE:
-            return Sample(input=record["question_content"], metadata=metadata)
-    return []
-
-
-def record_to_sample_for_code_execution(
-    record: dict[str, Any], start_date: str = None, end_date: str = None
-) -> Sample:
-    metadata = {
-        "id": record["id"],
-        "function_name": record["function_name"],
-        "code": record["code"],
-        "input": record["input"],
-        "output": record["output"],
-        "numsteps": record["numsteps"],
-        "problem_id": record["problem_id"],
-    }
-
-    return Sample(input=record["code"], metadata=metadata)
-
-
-def record_to_sample_for_test_output_prediction(
-    record: dict[str, Any], start_date: str = None, end_date: str = None
-) -> Sample:
-    metadata = {
-        "question_title": record["question_title"],
-        "question_content": record["question_content"],
-        "question_id": record["question_id"],
-        "contest_id": record["contest_id"],
-        "test_id": record["test_id"],
-        "contest_date": record["contest_date"],
-        "starter_code": record["starter_code"],
-        "function_name": record["function_name"],
-        "difficulty": record["difficulty"],
-        "test": jsonlib.loads(record["test"]),
-    }
-    return Sample(input=record["question_content"], metadata=metadata)
 
 
 def create_code_execution_prompt(code: str, input: str) -> str:
@@ -371,8 +313,8 @@ program
 
 
 @solver
-def custom_solver():
-    global SCENARIO
+def custom_solver(SCENARIO: str):
+    # global SCENARIO
 
     if SCENARIO == "codegeneration":
         model = get_model()
@@ -488,7 +430,6 @@ def code_execution_solver():
         code_to_run += "\n"
 
         try:
-            # test_case = resp.choices[-1].message.content[-1].text
             test_case = resp.choices[0].message.content
             code_to_run += test_case.split("[ANSWER]")[1].split("[/ANSWER]")[0]
         except IndexError:
@@ -518,8 +459,7 @@ def test_output_prediction_solver():
                 ),
             ],
         )
-        # resp = resp.choices[-1].message.content[-1].text
-        # print(resp[-1].text)
+
         resp = resp.choices[0].message.content
         resp = resp.split("```python")[-1].split("```")[0]
 
@@ -531,52 +471,6 @@ def test_output_prediction_solver():
         return state
 
     return solve
-
-
-@scorer(metrics=[accuracy(), stderr()])
-def custom_scorer() -> Scorer:
-    async def score(state: TaskState, generate: Generate) -> Score:
-        if SCENARIO in ["codegeneration", "selfrepair", "codeexecution"]:
-            try:
-                result = await sandbox().exec(
-                    cmd=["python", "-c", "".join(state.metadata["generated_code"])],
-                    timeout=VERIFY_TIMEOUT,
-                )
-                # print(state.metadata["generated_code"])
-                # print(result)
-                if result.returncode == 0:
-                    return Score(value=1.0)
-                else:
-                    return Score(value=0.0)
-            except TimeoutError:
-                result = ExecResult(False, 1, "", "Verification timed out.")
-
-                return Score(value=0.0)
-        else:
-            return ValueError(f"Invalid scenario: {SCENARIO}")
-
-    return score
-
-
-@scorer(metrics=[accuracy(), stderr()])
-def test_output_prediction_scorer() -> Scorer:
-    async def score(state: TaskState, generate: Generate) -> Score:
-        if SCENARIO == "testoutputprediction":
-            formatted_test_output = (
-                state.metadata["predicted_test_output"].split("==")[-1].strip()
-            )
-
-            if (
-                formatted_test_output.strip()
-                == str(state.metadata["test"][0]["output"]).strip()
-            ):
-                return Score(value=1.0)
-            else:
-                return Score(value=0.0)
-        else:
-            return ValueError(f"Invalid scenario: {SCENARIO}")
-
-    return score
 
 
 @task
@@ -619,8 +513,8 @@ def lcb(
 
         return Task(
             dataset=code_generation_dataset,
-            solver=custom_solver(),
-            scorer=custom_scorer(),
+            solver=custom_solver(SCENARIO=scenario),
+            scorer=custom_scorer(SCENARIO=scenario, VERIFY_TIMEOUT=VERIFY_TIMEOUT),
             config=GenerateConfig(),
             sandbox=sandbox,
         )
@@ -634,7 +528,7 @@ def lcb(
         return Task(
             dataset=test_output_prediction_dataset,
             solver=test_output_prediction_solver(),
-            scorer=test_output_prediction_scorer(),
+            scorer=test_output_prediction_scorer(SCENARIO=scenario),
             config=GenerateConfig(),
             sandbox=sandbox,
         )
@@ -648,7 +542,7 @@ def lcb(
         return Task(
             dataset=code_execution_dataset,
             solver=code_execution_solver(),
-            scorer=custom_scorer(),
+            scorer=custom_scorer(SCENARIO=scenario),
             config=GenerateConfig(),
             sandbox=sandbox,
         )
