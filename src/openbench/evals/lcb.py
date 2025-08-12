@@ -21,6 +21,7 @@ from inspect_ai.solver import solver, TaskState, Generate
 import json as jsonlib
 from inspect_ai.model import ChatMessageUser
 from inspect_ai.util import sandbox
+from typing import Union, Any
 
 from openbench.scorers.lcb import custom_scorer, test_output_prediction_scorer
 from openbench.datasets.lcb import (
@@ -186,9 +187,9 @@ assert {input} == ??
 
 VERIFY_TIMEOUT = 30
 
-START_DATE: str = None
-END_DATE: str = None
-SCENARIO: str = None
+START_DATE: Union[str, None] = None
+END_DATE: Union[str, None] = None
+SCENARIO: Union[str, None] = None
 
 
 def create_code_execution_prompt(code: str, input: str) -> str:
@@ -253,7 +254,7 @@ assert {function_name}({testcase_input}) == # TODO
     return TEST_OUTPUT_PREDICTION_PROMPT
 
 
-def create_self_repair_prompt(question_content: str, code: str, error_message: str):
+def create_self_repair_prompt(question_content: Any, code: str, error_message: str):
     FORMATTING_CHECK_ERROR_MESSAGE = f"Respond with the following format: ```python\n{error_message}\n```. The following code should fix the following error: {error_message}"
     SELF_REPAIR_PROMPT = f"""
 You are a helpful programming assistant and an expert Python programmer. You are
@@ -274,7 +275,9 @@ entired fixed program within code delimiters only for once.
     return SELF_REPAIR_PROMPT
 
 
-def create_code_generation_prompt(question_content: str, starter_code: str = None):
+def create_code_generation_prompt(
+    question_content: Any, starter_code: Union[str, None] = None
+):
     FORMATTING_MESSAGE = ""
     FORMATTING_WITHOUT_STARTER_MESSAGE = """Only generate a function that accepts a single input parameter,
 the raw input string.
@@ -330,7 +333,7 @@ def custom_solver(SCENARIO: str):
                 ],
             )
 
-            model_str = resp.choices[0].message.content
+            model_str: Any = resp.choices[0].message.content
 
             try:
                 model_str = model_str.split("```python")[1].split("```")[0]
@@ -358,10 +361,10 @@ def custom_solver(SCENARIO: str):
                 ],
             )
 
-            model_str = resp.choices[0].message.content
+            model_str_raw: Any = resp.choices[0].message.content
 
             try:
-                model_str = model_str.split("```python")[1].split("```")[0]
+                model_str: Any = model_str_raw.split("```python")[1].split("```")[0]
                 for test_case in jsonlib.loads(state.metadata["public_test_cases"]):
                     model_str += f"\nassert str(foo('''{test_case['input'].strip()}''')) == '''{test_case['output'].strip()}'''"
             except IndexError:
@@ -389,16 +392,18 @@ def custom_solver(SCENARIO: str):
                     ],
                 )
 
-                model_str = resp.choices[0].message.content
+                model_str_raw_2: Any = resp.choices[0].message.content
 
                 try:
-                    model_str = model_str.split("```python")[1].split("```")[0]
+                    model_str_2: Any = model_str_raw_2.split("```python")[1].split(
+                        "```"
+                    )[0]
                     for test_case in jsonlib.loads(state.metadata["public_test_cases"]):
-                        model_str += f"\nassert str(foo('''{test_case['input'].strip()}''')) == '''{test_case['output'].strip()}'''"
+                        model_str_2 += f"\nassert str(foo('''{test_case['input'].strip()}''')) == '''{test_case['output'].strip()}'''"
                 except IndexError:
-                    model_str = ""
+                    model_str_2 = ""
 
-                state.metadata["generated_code"] = model_str
+                state.metadata["generated_code"] = model_str_2
 
                 return state
 
@@ -477,8 +482,8 @@ def test_output_prediction_solver():
 def lcb(
     scenario: str = "codegeneration",
     release_version: str = "release_v6",
-    start_date: str = None,
-    end_date: str = None,
+    start_date: Union[str, None] = None,
+    end_date: Union[str, None] = None,
     sandbox: str = "local",
 ) -> Task:
     """
@@ -548,4 +553,4 @@ def lcb(
         )
 
     else:
-        return ValueError(f"Invalid scenario: {SCENARIO}")
+        raise ValueError(f"Invalid scenario: {SCENARIO}")

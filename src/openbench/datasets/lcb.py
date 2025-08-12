@@ -1,14 +1,13 @@
 from inspect_ai.dataset import Sample
-from typing import Any
+from typing import Any, Union
 import json as jsonlib
 
 
 def record_to_sample_for_code_generation(
-    record: dict[str, Any], start_date: str = None, end_date: str = None
+    record: dict[str, Any],
+    start_date: Union[str, None] = None,
+    end_date: Union[str, None] = None,
 ) -> Sample:
-    START_DATE = start_date
-    END_DATE = end_date
-
     metadata = {
         "public_test_cases": record["public_test_cases"],
         "question_id": record["question_id"],
@@ -18,22 +17,13 @@ def record_to_sample_for_code_generation(
         "difficulty": record["difficulty"],
         "platform": record["platform"],
     }
-    if (START_DATE is None) and (END_DATE is None):
-        return Sample(input=record["question_content"], metadata=metadata)
-    if (START_DATE is not None) and (END_DATE is None):
-        if metadata["contest_date"] > START_DATE:
-            return Sample(input=record["question_content"], metadata=metadata)
-    if (START_DATE is None) and (END_DATE is not None):
-        if metadata["contest_date"] < END_DATE:
-            return Sample(input=record["question_content"], metadata=metadata)
-    if (START_DATE is not None) and (END_DATE is not None):
-        if START_DATE < metadata["contest_date"] > END_DATE:
-            return Sample(input=record["question_content"], metadata=metadata)
-    return []
+    return Sample(input=record["question_content"], metadata=metadata)
 
 
 def record_to_sample_for_code_execution(
-    record: dict[str, Any], start_date: str = None, end_date: str = None
+    record: dict[str, Any],
+    start_date: Union[str, None] = None,
+    end_date: Union[str, None] = None,
 ) -> Sample:
     metadata = {
         "id": record["id"],
@@ -49,7 +39,9 @@ def record_to_sample_for_code_execution(
 
 
 def record_to_sample_for_test_output_prediction(
-    record: dict[str, Any], start_date: str = None, end_date: str = None
+    record: dict[str, Any],
+    start_date: Union[str, None] = None,
+    end_date: Union[str, None] = None,
 ) -> Sample:
     metadata = {
         "question_title": record["question_title"],
