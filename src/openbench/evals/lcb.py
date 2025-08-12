@@ -333,7 +333,7 @@ def custom_solver(SCENARIO: str):
                 ],
             )
 
-            model_str:str = resp.choices[0].message.content
+            model_str: str = resp.choices[0].message.content
 
             try:
                 model_str = model_str.split("```python")[1].split("```")[0]
