@@ -21,6 +21,7 @@ from inspect_ai.solver import solver, TaskState, Generate
 import json as jsonlib
 from inspect_ai.model import ChatMessageUser
 from inspect_ai.util import sandbox
+from typing import Union
 
 from openbench.scorers.lcb import custom_scorer, test_output_prediction_scorer
 from openbench.datasets.lcb import (
@@ -186,9 +187,9 @@ assert {input} == ??
 
 VERIFY_TIMEOUT = 30
 
-START_DATE: str = None
-END_DATE: str = None
-SCENARIO: str = None
+START_DATE: Union[str, None] = None
+END_DATE: Union[str, None] = None
+SCENARIO: Union[str, None] = None
 
 
 def create_code_execution_prompt(code: str, input: str) -> str:
@@ -274,7 +275,9 @@ entired fixed program within code delimiters only for once.
     return SELF_REPAIR_PROMPT
 
 
-def create_code_generation_prompt(question_content: str, starter_code: str = None):
+def create_code_generation_prompt(
+    question_content: str, starter_code: Union[str, None] = None
+):
     FORMATTING_MESSAGE = ""
     FORMATTING_WITHOUT_STARTER_MESSAGE = """Only generate a function that accepts a single input parameter,
 the raw input string.
