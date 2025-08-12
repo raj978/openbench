@@ -551,4 +551,4 @@ def lcb(
         )
 
     else:
-        return ValueError(f"Invalid scenario: {SCENARIO}")
+        raise ValueError(f"Invalid scenario: {SCENARIO}")
