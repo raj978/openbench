@@ -254,7 +254,7 @@ assert {function_name}({testcase_input}) == # TODO
     return TEST_OUTPUT_PREDICTION_PROMPT
 
 
-def create_self_repair_prompt(question_content: str, code: str, error_message: str):
+def create_self_repair_prompt(question_content: Any, code: str, error_message: str):
     FORMATTING_CHECK_ERROR_MESSAGE = f"Respond with the following format: ```python\n{error_message}\n```. The following code should fix the following error: {error_message}"
     SELF_REPAIR_PROMPT = f"""
 You are a helpful programming assistant and an expert Python programmer. You are
