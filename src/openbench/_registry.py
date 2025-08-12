@@ -59,8 +59,6 @@ from .evals.musr import musr  # noqa: F401, E402
 from .evals.openbookqa import openbookqa  # noqa: F401, E402
 from .evals.simpleqa import simpleqa  # noqa: F401, E402
 from .evals.supergpqa import supergpqa  # noqa: F401, E402
-from .evals.lcb import lcb  # TODO: fix comment
-from .evals.ifeval import ifeval  # TODO: fix comment
 
 # MathArena benchmarks
 from .evals.matharena.aime_2023_I.aime_2023_I import aime_2023_I  # noqa: F401, E402
