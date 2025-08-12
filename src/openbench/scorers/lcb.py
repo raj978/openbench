@@ -1,11 +1,11 @@
 from inspect_ai.solver import TaskState, Generate
-from inspect_ai.scorer import scorer, Score, Scorer, accuracy, stderr
+from inspect_ai.scorer import scorer, Score, accuracy, stderr
 from inspect_ai.util import ExecResult, sandbox
 
 
 @scorer(metrics=[accuracy(), stderr()])
-def custom_scorer(SCENARIO: str, VERIFY_TIMEOUT: int = 30) -> Scorer:
-    async def score(state: TaskState, generate: Generate) -> Score:
+def custom_scorer(SCENARIO: str, VERIFY_TIMEOUT: int = 30):
+    async def score(state: TaskState, generate: Generate):
         if SCENARIO in ["codegeneration", "selfrepair", "codeexecution"]:
             try:
                 result = await sandbox().exec(
@@ -29,8 +29,8 @@ def custom_scorer(SCENARIO: str, VERIFY_TIMEOUT: int = 30) -> Scorer:
 
 
 @scorer(metrics=[accuracy(), stderr()])
-def test_output_prediction_scorer(SCENARIO: str) -> Scorer:
-    async def score(state: TaskState, generate: Generate) -> Score:
+def test_output_prediction_scorer(SCENARIO: str):
+    async def score(state: TaskState, generate: Generate):
         if SCENARIO == "testoutputprediction":
             formatted_test_output = (
                 state.metadata["predicted_test_output"].split("==")[-1].strip()
