@@ -48,7 +48,7 @@ def bbh(subtask: Union[str, None] = None, cot: str = "True") -> Task:
     """
 
     return Task(
-        dataset=load_dataset(subtask, cot), # type: ignore
+        dataset=load_dataset(subtask, cot),  # type: ignore
         solver=custom_solver(),
         scorer=custom_scorer(),
         config=GenerateConfig(),
