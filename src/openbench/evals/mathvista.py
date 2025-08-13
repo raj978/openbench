@@ -14,7 +14,7 @@ Default split: testmini
 """
 
 from inspect_ai.dataset import hf_dataset
-from inspect_ai.solver import solver, TaskState, Generate
+from inspect_ai.solver import solver, TaskState, Generate, generate
 from inspect_ai import Task, task
 from inspect_ai.model import (
     get_model,
@@ -44,6 +44,6 @@ def mathvista():
         dataset=hf_dataset(
             "AI4Math/MathVista", split="testmini", sample_fields=record_to_sample
         ),
-        solver=custom_solver(),
+        solver=[generate()],
         scorer=custom_scorer(),
     )
