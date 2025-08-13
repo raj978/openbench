@@ -332,6 +332,14 @@ BENCHMARKS = {
         module_path="openbench.evals.scicode",
         function_name="scicode",
     ),
+    "chartqa": BenchmarkMetadata(
+        name="ChartQA",
+        description="A Benchmark for Question Answering about Charts with Visual and Logical Reasoning",
+        category="core",
+        tags=["multiple-choice", "reasoning", "multi-modal"],
+        module_path="openbench.evals.chartqa",
+        function_name="chartqa",
+    ),
 }
 
 
