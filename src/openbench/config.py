@@ -332,6 +332,14 @@ BENCHMARKS = {
         module_path="openbench.evals.lcb",
         function_name="lcb",
     ),
+    "mtob": BenchmarkMetadata(
+        name="MTOB",
+        description="Machine Translation from One Book",
+        category="core",
+        tags=["translation", "long-context"],
+        module_path="openbench.evals.mtob",
+        function_name="mtob",
+    ),
 }
 
 
