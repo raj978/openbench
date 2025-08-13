@@ -7,7 +7,7 @@ import nltk  # type: ignore
 def custom_scorer() -> Scorer:
     async def score(state: TaskState, target: Target) -> Score:
         score = nltk.translate.chrf_score.sentence_chrf(
-            state.messages[-1].content.split(),
+            state.messages[-1].content.split(),  # type: ignore
             target.target[0].split(),  # type: ignore
         )
         return Score(value=score)
