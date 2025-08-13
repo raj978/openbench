@@ -332,6 +332,14 @@ BENCHMARKS = {
         module_path="openbench.evals.lcb",
         function_name="lcb",
     ),
+    "bbh": BenchmarkMetadata(
+        name="BBH",
+        description="Big-Bench-Hard",
+        category="core",
+        tags=["reasoning"],
+        module_path="openbench.evals.bbh",
+        function_name="bbh",
+    ),
 }
 
 
