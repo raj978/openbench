@@ -332,6 +332,14 @@ BENCHMARKS = {
         module_path="openbench.evals.lcb",
         function_name="lcb",
     ),
+    "taubench": BenchmarkMetadata(
+        name="TauBench",
+        description="Tau-Bench",
+        category="core",
+        tags=["translation", "long-context"],
+        module_path="openbench.evals.taubench",
+        function_name="taubench",
+    ),
 }
 
 
