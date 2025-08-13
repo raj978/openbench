@@ -332,6 +332,14 @@ BENCHMARKS = {
         module_path="openbench.evals.lcb",
         function_name="lcb",
     ),
+    "gmcq": BenchmarkMetadata(
+        name="GMCQ",
+        description="GitHub Multiple Choice Questions",
+        category="core",
+        tags=["code-understanding"],
+        module_path="openbench.evals.gmcq",
+        function_name="gmcq",
+    ),
 }
 
 
