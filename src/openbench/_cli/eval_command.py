@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict, Annotated, Tuple, Union
 from enum import Enum
 import sys
+import time
 import typer
 from inspect_ai import eval
 from inspect_ai.model import Model
@@ -209,19 +210,19 @@ def run_eval(
         ),
     ] = True,
     temperature: Annotated[
-        float,
+        Optional[float],
         typer.Option(
             help="Model temperature",
             envvar="BENCH_TEMPERATURE",
         ),
-    ] = 0.6,
+    ] = None,
     top_p: Annotated[
-        float,
+        Optional[float],
         typer.Option(
             help="Model top-p",
             envvar="BENCH_TOP_P",
         ),
-    ] = 1.0,
+    ] = None,
     max_tokens: Annotated[
         Optional[int],
         typer.Option(
@@ -277,6 +278,23 @@ def run_eval(
             envvar="BENCH_DEBUG",
         ),
     ] = False,
+    hub_repo: Annotated[
+        Optional[str],
+        typer.Option(
+            help=(
+                "Target Hub dataset repo (e.g. username/openbench-logs). "
+                "If provided, logs will be exported to this dataset"
+            ),
+            envvar="BENCH_HUB_REPO",
+        ),
+    ] = None,
+    hub_private: Annotated[
+        Optional[bool],
+        typer.Option(
+            help="Create/update the Hub dataset as private",
+            envvar="BENCH_HUB_PRIVATE",
+        ),
+    ] = False,
 ) -> None:
     """
     Run a benchmark on a model.
@@ -329,6 +347,8 @@ def run_eval(
         for task_arg in task_args.split(","):
             task_key, task_value = task_arg.split("=")
             task_args_dict[task_key] = task_value
+    # Capture start time to locate logs created by this run
+    start_time = time.time()
 
     try:
         eval(
@@ -357,8 +377,17 @@ def run_eval(
             task_args=task_args_dict,
         )
 
-        # Placeholder - actual implementation would run the evaluation
         typer.echo("Evaluation complete!")
+
+        if hub_repo:
+            from openbench._cli.export import export_logs_to_hub
+
+            export_logs_to_hub(
+                logfile=logfile,
+                start_time=start_time,
+                hub_repo=hub_repo,
+                hub_private=hub_private,
+            )
     except Exception as e:
         if debug:
             # In debug mode, let the full stack trace show
