@@ -10,7 +10,7 @@ def record_to_sample(record: dict[str, str]) -> Sample:
     ]
 
     for i, option in enumerate(record["options"]):
-        letter = chr(ord('A') + i)
+        letter = chr(ord("A") + i)
         prompt_list.append(f"{letter}) {option}")
 
     prompt_str = "\n".join(prompt_list)

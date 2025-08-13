@@ -65,7 +65,7 @@ def category_accuracy_metrics() -> Metric:
                 if sample_metadata is not None:
                     category = sample_metadata["category"]
                     # Only collect for categories we're reporting
-                    if (category in categories_to_report):
+                    if category in categories_to_report:
                         # Get the float value of the score (e.g., 1.0 for correct, 0.0 for incorrect)
                         float_val = sample_score.score.as_float()
                         category_float_scores[category].append(float_val)
