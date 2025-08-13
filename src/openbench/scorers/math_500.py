@@ -239,9 +239,9 @@ def _is_frac(expr: str) -> bool:
 
 def _str_is_int(x: str) -> bool:
     try:
-        x = _strip_properly_formatted_commas(x)
-        x = float(x)
-        return abs(x - int(round(x))) <= 1e-7
+        x_stripped = _strip_properly_formatted_commas(x)
+        x_float = float(x_stripped)
+        return abs(x_float - int(round(x_float))) <= 1e-7
     except Exception:
         return False
 
