@@ -340,6 +340,14 @@ BENCHMARKS = {
         module_path="openbench.evals.gmcq",
         function_name="gmcq",
     ),
+    "scicode": BenchmarkMetadata(
+        name="SCICode",
+        description="SCICode",
+        category="core",
+        tags=["code-generation"],
+        module_path="openbench.evals.scicode",
+        function_name="scicode",
+    ),
 }
 
 
