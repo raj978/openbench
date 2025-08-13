@@ -1,9 +1,9 @@
 import re
 from typing import Optional
 
-import sympy
-from pylatexenc import latex2text
-from sympy.parsing import sympy_parser
+import sympy  # type: ignore
+from pylatexenc import latex2text  # type: ignore
+from sympy.parsing import sympy_parser  # type: ignore
 
 from inspect_ai.model import Model, get_model
 from inspect_ai.scorer import (
