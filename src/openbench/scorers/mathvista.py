@@ -33,6 +33,11 @@ def custom_scorer():
                 model_pred_index = char_to_int[char]
                 model_pred_value = state.choices[model_pred_index].value
 
+                if 0 <= model_pred_index < len(state.choices):
+                    model_pred_value = state.choices[model_pred_index].value
+                else:
+                    return Score(value=0.0)
+
                 state.metadata["model_pred_value"] = model_pred_value
                 state.metadata["target_value"] = target.target[0].strip()
                 state.metadata["model_pred"] = str(

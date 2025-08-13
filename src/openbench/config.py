@@ -332,7 +332,7 @@ BENCHMARKS = {
         module_path="openbench.evals.mathvista",
         function_name="mathvista",
     ),
-      "scicode": BenchmarkMetadata(
+    "scicode": BenchmarkMetadata(
         name="SCICode",
         description="SCICode",
         category="core",
