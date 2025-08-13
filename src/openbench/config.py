@@ -324,6 +324,14 @@ BENCHMARKS = {
         module_path="openbench.evals.matharena.hmmt_feb_2025.hmmt_feb_2025",
         function_name="hmmt_feb_2025",
     ),
+    "collie": BenchmarkMetadata(
+        name="COLLIE",
+        description="COLLIE: Systematic Construction of Constrained Text Generation Tasks",
+        category="core",
+        tags=["constrained-generation"],
+        module_path="openbench.evals.collie",
+        function_name="collie",
+    ),
 }
 
 
