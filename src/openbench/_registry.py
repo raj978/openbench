@@ -83,6 +83,14 @@ def novita() -> Type[ModelAPI]:
     return NovitaAPI
 
 
+@modelapi(name="parasail")
+def parasail() -> Type[ModelAPI]:
+    """Register Parasail provider."""
+    from .model._providers.parasail import ParasailAPI
+
+    return ParasailAPI
+
+
 # Task Registration
 
 # Core benchmarks
