@@ -10,6 +10,10 @@ Based on: https://livecodebench.github.io/
 # run code generation
 bench eval lcb --model "groq/llama-3.1-8b-instant" --T scenario=code_generation,release_version="release_version"
 
+Please note: due to datasets dependency issues, pleaes keep datasets==4.0.0.
+However, if you do not have the LiveCodeBench dataset cached through the HuggingFace dataset cache,
+please temporarily downgrade to datasets==3.6.0, and revert it back to 4.0.0 after the dataset is cached.
+
 Please refer to https://huggingface.co/datasets/livecodebench/code_generation_lite
 for the release version to use.
 """
