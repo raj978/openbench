@@ -37,7 +37,7 @@ def record_to_sample(record: dict) -> Sample:
         ChatMessageUser(content=[ContentImage(image=data_uri)]),
     ]
     return Sample(
-        input=input_list,
+        input=input_list,  # type: ignore
         target=record["label"],
     )
 
