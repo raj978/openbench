@@ -1,12 +1,9 @@
-from inspect_ai.solver import multiple_choice
-from inspect_ai.scorer import choice
-from inspect_ai.dataset import hf_dataset
-from inspect_ai import Task, task
-from inspect_ai.dataset import Sample
+import base64
+from inspect_ai.dataset import hf_dataset, Sample
 from inspect_ai.model import ChatMessageUser, ContentText, ContentImage
 
 
-def generate_user_prompt(query: str, image: str) -> str:
+def generate_user_prompt(query: str) -> str:
     """
     Attribution: EleutherAI/lm-evaluation-harness prompt
 
@@ -30,24 +27,23 @@ def generate_user_prompt(query: str, image: str) -> str:
     """
     return PROMPT
 
+
 def record_to_sample(record: dict) -> Sample:
+    input_message = generate_user_prompt(record["query"])
+    b64_str = base64.b64encode(record["image"]["bytes"]).decode("utf-8")
+    data_uri = f"data:image/png;base64,{b64_str}"
     input_list = [
-        ChatMessageUser(content=[ContentText(text=record["query"])]),
-        ChatMessageUser(content=[ContentImage(image=record["image"])]),
+        ChatMessageUser(content=[ContentText(text=input_message)]),
+        ChatMessageUser(content=[ContentImage(image=data_uri)]),
     ]
     return Sample(
-        input=record["input"],
-        metadata=record["metadata"],
-        choices=record["choices"],
-        target=record["target"],
+        input=input_list,
+        target=record["label"],
     )
 
-@task
-def chart_qa():
-    return Task(
-        dataset=hf_dataset(
-            "HuggingFaceM4/ChartQA", split="test", sample_fields=record_to_sample
-        ),
-        solver=None,
-        scorer=None,
+
+def load_dataset(split: str = "test"):
+    dataset = hf_dataset(
+        "HuggingFaceM4/ChartQA", split=split, sample_fields=record_to_sample
     )
+    return dataset
