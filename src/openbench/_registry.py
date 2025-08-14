@@ -75,6 +75,14 @@ def hyperbolic() -> Type[ModelAPI]:
     return HyperbolicAPI
 
 
+@modelapi(name="novita")
+def novita() -> Type[ModelAPI]:
+    """Register Novita provider."""
+    from .model._providers.novita import NovitaAPI
+
+    return NovitaAPI
+
+
 # Task Registration
 
 # Core benchmarks
