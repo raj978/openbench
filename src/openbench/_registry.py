@@ -51,11 +51,52 @@ def nous() -> Type[ModelAPI]:
     return NousAPI
 
 
+@modelapi(name="lambda")
+def lambda_provider() -> Type[ModelAPI]:
+    """Register Lambda provider."""
+    from .model._providers.lambda_ai import LambdaAPI
+
+    return LambdaAPI
+
+
+@modelapi(name="baseten")
+def baseten() -> Type[ModelAPI]:
+    """Register Baseten provider."""
+    from .model._providers.baseten import BasetenAPI
+
+    return BasetenAPI
+
+
+@modelapi(name="hyperbolic")
+def hyperbolic() -> Type[ModelAPI]:
+    """Register Hyperbolic provider."""
+    from .model._providers.hyperbolic import HyperbolicAPI
+
+    return HyperbolicAPI
+
+
+@modelapi(name="novita")
+def novita() -> Type[ModelAPI]:
+    """Register Novita provider."""
+    from .model._providers.novita import NovitaAPI
+
+    return NovitaAPI
+
+
+@modelapi(name="parasail")
+def parasail() -> Type[ModelAPI]:
+    """Register Parasail provider."""
+    from .model._providers.parasail import ParasailAPI
+
+    return ParasailAPI
+
+
 # Task Registration
 
 # Core benchmarks
 from .evals.drop import drop  # noqa: F401, E402
 from .evals.gpqa_diamond import gpqa_diamond  # noqa: F401, E402
+from .evals.graphwalks import graphwalks  # noqa: F401, E402
 from .evals.healthbench import healthbench, healthbench_hard, healthbench_consensus  # noqa: F401, E402
 from .evals.hle import hle, hle_text  # noqa: F401, E402
 from .evals.humaneval import humaneval  # noqa: F401, E402
