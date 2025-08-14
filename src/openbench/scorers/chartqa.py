@@ -7,8 +7,6 @@ from inspect_ai.scorer import Target, Score
 def custom_scorer():
     async def score(state: TaskState, target: Target):
         output = state.output
-        print(output.choices[-1].message.content)
-        print(target.target)
         model_prediction = (
             output.choices[-1].message.content.split("Final Answer: ")[-1].strip()  # type: ignore
         )
