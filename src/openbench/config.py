@@ -357,6 +357,14 @@ BENCHMARKS = {
         module_path="openbench.evals.scicode",
         function_name="scicode",
     ),
+    "slidevqa": BenchmarkMetadata(
+        name="SlideVQA",
+        description="SlideVQA: A Dataset for Document Visual Question Answering on Multiple Images",
+        category="core",
+        tags=["multi-modal", "document-visual-question-answering"],
+        module_path="openbench.evals.slidevqa",
+        function_name="slidevqa",
+    ),
 }
 
 
