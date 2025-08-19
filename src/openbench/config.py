@@ -406,6 +406,14 @@ BENCHMARKS = {
         function_name="scicode",
         is_alpha=True,
     ),
+    "jsonschemabench": BenchmarkMetadata(
+        name="JSONSchemaBench",
+        description="JSON Schema generation benchmark with ~10K real-world schemas from GitHub, Kubernetes, and other sources for evaluating constrained decoding",
+        category="core",
+        tags=["json", "jsonschema", "generation", "constrained-decoding"],
+        module_path="openbench.evals.jsonschemabench",
+        function_name="jsonschemabench",
+    ),
 }
 
 
