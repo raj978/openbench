@@ -1,4 +1,8 @@
-from typing import Dict, List, Tuple
+import json
+import copy
+from enum import StrEnum
+from pathlib import Path
+from typing import Dict, List, Tuple, Set, Iterable
 from datasets import load_dataset  # type: ignore[import-untyped]
 from inspect_ai.dataset import Dataset, Sample, MemoryDataset
 from inspect_ai.model import (
@@ -7,6 +11,101 @@ from inspect_ai.model import (
     ChatMessageAssistant,
     ChatMessageTool,
 )
+
+
+class Compatibility(StrEnum):
+    """Compatibility modes for filtering records."""
+
+    DEFAULT = "default"
+    OPENAI = "openai"
+
+
+def _get_openai_compatible_ids() -> Set[str]:
+    """Load the set of OpenAI-compatible record IDs."""
+    ids_file = Path(__file__).parent / "openai_compatible_ids.txt"
+    with open(ids_file, "r") as f:
+        return {line.strip() for line in f if line.strip()}
+
+
+def _get_default_compatible_ids() -> Set[str]:
+    """Return empty set for default compatibility (no filtering)."""
+    return set()
+
+
+COMPATIBILITY_FUNCTIONS = {
+    Compatibility.DEFAULT: _get_default_compatible_ids,
+    Compatibility.OPENAI: _get_openai_compatible_ids,
+}
+
+
+def _filter_records_by_compatibility(
+    records: Iterable[Dict], compatibility: Compatibility
+) -> List[Dict]:
+    """Filter dataset records based on API compatibility."""
+    if compatibility not in COMPATIBILITY_FUNCTIONS:
+        available_modes = list(COMPATIBILITY_FUNCTIONS.keys())
+        raise ValueError(
+            f"Unsupported compatibility mode: {compatibility}. "
+            f"Available modes: {', '.join(str(m) for m in available_modes)}"
+        )
+
+    compatible_ids = COMPATIBILITY_FUNCTIONS[compatibility]()
+
+    if not compatible_ids:
+        return list(records)
+
+    return [record for record in records if record["unique_id"] in compatible_ids]
+
+
+# Schema adaptation functions (copied from JSONSchemaBench)
+def _add_root_type_if_missing(schema: dict) -> None:
+    """Add type: object if missing from schema root."""
+    if "type" not in schema:
+        schema["type"] = "object"
+
+
+def _recursively_set_additional_properties_false(schema: dict) -> None:
+    """Recursively add additionalProperties: false to objects with properties."""
+    if not isinstance(schema, dict):
+        return
+    if (
+        "additionalProperties" not in schema or schema["additionalProperties"]
+    ) and schema.get("properties"):
+        schema["additionalProperties"] = False
+    if "properties" in schema:
+        for prop in schema["properties"]:
+            _recursively_set_additional_properties_false(schema["properties"][prop])
+    if "items" in schema:
+        _recursively_set_additional_properties_false(schema["items"])
+
+
+def _set_all_properties_required(schema: dict) -> dict:
+    """Recursively make all properties required in objects."""
+    if not isinstance(schema, dict):
+        return schema
+    if "properties" in schema:
+        schema["required"] = list(schema["properties"].keys())
+    for value in schema.values():
+        if isinstance(value, dict):
+            _set_all_properties_required(value)
+        elif isinstance(value, list):
+            for item in value:
+                _set_all_properties_required(item)
+    return schema
+
+
+def _adapt_schema(schema_str: str) -> str:
+    """Adapt schema using JSONSchemaBench-style modifications for OpenAI compatibility."""
+    schema_dict = json.loads(schema_str)
+    adapted_schema = copy.deepcopy(schema_dict)
+
+    # Match exact order from JSONSchemaBench
+    _recursively_set_additional_properties_false(adapted_schema)
+    _add_root_type_if_missing(adapted_schema)
+    adapted_schema = _set_all_properties_required(adapted_schema)
+
+    return json.dumps(adapted_schema)
+
 
 JSONSCHEMABENCH_SYSTEM_PROMPT = (
     "You need to generate a JSON object that matches the schema below."
@@ -111,30 +210,45 @@ def _build_messages(
     return messages
 
 
-def record_to_sample(
-    record: dict, num_shots: int = 0, subset: str | None = None
+def _record_to_sample(
+    record: dict,
+    num_shots: int = 0,
+    subset: str | None = None,
+    adapt_schema: bool = False,
 ) -> Sample:
     """Convert HuggingFace dataset record to Inspect Sample with few-shot prompting."""
-    schema = record["json_schema"]
+    original_schema = record["json_schema"]
     unique_id = record["unique_id"]
 
-    # Build few-shot prompt if requested
+    # Apply schema adaptation if requested
+    if adapt_schema:
+        adapted_schema = _adapt_schema(original_schema)
+    else:
+        adapted_schema = original_schema
+
+    # Build few-shot prompt if requested (use adapted schema for prompt)
     examples = _get_few_shot_examples(subset, num_shots)
-    messages = _build_messages(schema, examples)
+    messages = _build_messages(adapted_schema, examples)
 
     return Sample(
         input=messages,
         target="",
         metadata={
-            "schema": schema,
+            "schema": adapted_schema,  # Use adapted schema for structured output
+            "original_schema": original_schema,  # Keep original for comparison
             "unique_id": unique_id,
             "num_shots": num_shots,
+            "adapted": adapt_schema,
         },
     )
 
 
 def get_dataset(
-    subset: str | None = None, split: str = "all", num_shots: int = 0
+    subset: str | None = None,
+    split: str = "all",
+    num_shots: int = 0,
+    adapt_schema: bool = False,
+    compatibility: Compatibility = Compatibility.DEFAULT,
 ) -> Dataset:
     """Load JSONSchemaBench dataset from HuggingFace with few-shot examples.
 
@@ -142,6 +256,8 @@ def get_dataset(
         subset: Dataset subset (e.g., "Github_easy", "Kubernetes", "Snowplow")
         split: Dataset split ("test", "val", "train", or "all")
         num_shots: Number of few-shot examples (0 for zero-shot, paper used 2)
+        adapt_schema: Whether to apply JSONSchemaBench-style schema adaptation
+        compatibility: Filter to records compatible with specific APIs
     """
     split_param = {
         "test": "test",
@@ -154,8 +270,14 @@ def get_dataset(
     dataset = load_dataset(
         "epfl-dlab/JSONSchemaBench", config, split=split_param[split]
     )
+
+    # Filter records by compatibility
+    filtered_records = _filter_records_by_compatibility(dataset, compatibility)
+
     samples = [
-        record_to_sample(record, num_shots=num_shots, subset=subset)
-        for record in dataset
+        _record_to_sample(
+            record, num_shots=num_shots, subset=subset, adapt_schema=adapt_schema
+        )
+        for record in filtered_records
     ]
     return MemoryDataset(samples=samples, name=name)
