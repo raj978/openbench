@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openbench"
-version = "0.2.0"
+version = "0.3.0"
 requires-python = ">=3.10"
 description = "OpenBench - open source, replicable, and standardized evaluation infrastructure"
 readme = "README.md"
@@ -14,14 +14,14 @@ authors = [
     { name="Groq" }
 ]
 dependencies = [
-    "datasets==4.0.0",
-    "groq==0.30.0",
-    "inspect-ai==0.3.115",
-    "openai==1.97.1",
-    "pydantic-settings==2.9.1",
-    "scipy==1.15.3",
-    "tiktoken==0.11.0",
-    "typer==0.15.3",
+    "datasets>=3.6.0",
+    "groq>=0.30.0",
+    "inspect-ai==0.3.125",
+    "openai>=1.97.1",
+    "pydantic-settings>=2.9.1",
+    "scipy>=1.15.3",
+    "tiktoken>=0.11.0",
+    "typer>=0.15.3",
 ]
 
 [project.urls]
@@ -47,6 +47,8 @@ minversion = "8.0"
 addopts = "-ra -q --strict-markers"
 testpaths = ["tests"]
 pythonpath = ["src", "."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
     "integration: marks tests that require external services (deselect with '-m \"not integration\"')",
 ]
@@ -67,11 +69,23 @@ exclude_lines = [
 precision = 2
 show_missing = true
 
+[tool.uv.sources]
+scicode = { git = "https://github.com/TheFloatingString/SciCode-fork.git", rev = "4f20d721ba3e2227196262083b9b7a70484d54f7" }
+
 [dependency-groups]
 dev = [
     "mypy>=1.15.0",
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
+    "pytest-asyncio==0.24.0",
     "pytest-cov>=4.1.0",
     "ruff>=0.11.9",
+    "types-jsonschema>=4.0.0",
+    "types-pyyaml>=6.0.12.20250809",
+]
+scicode = [
+    "scicode",
+]
+jsonschemabench = [
+    "jsonschema>=4.23.0",
 ]
