@@ -5,7 +5,7 @@ def record_to_sample(record: dict[str, str]) -> Sample:
     prompt_list = [
         "Answer the following multiple choice question. The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of ABCD etc.",
         "",
-        f"{record["question"]}",
+        f"{record['question']}",
         "",
     ]
 
