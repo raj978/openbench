@@ -163,6 +163,14 @@ def vercel() -> Type[ModelAPI]:
     return VercelAPI
 
 
+@modelapi(name="groq")
+def groq() -> Type[ModelAPI]:
+    """Register Groq provider (OpenBench implementation overriding Inspect)."""
+    from .model._providers.groq import GroqAPI
+
+    return GroqAPI
+
+
 # Task Registration
 
 # Core benchmarks
