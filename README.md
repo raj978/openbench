@@ -113,6 +113,7 @@ OpenBench supports 30+ model providers through Inspect AI. Set the appropriate A
 | **Vercel AI Gateway** | `AI_GATEWAY_API_KEY`   | `vercel/creator-name/model-name` |
 | **vLLM**              | None (local)           | `vllm/model-name`                |
 
+
 ## Available Benchmarks
 
 Here are the currently available benchmarks. For an up-to-date list use `bench list`.
@@ -123,12 +124,20 @@ Here are the currently available benchmarks. For an up-to-date list use `bench l
 | Category          | Benchmarks                                                                                                                                                                                                                                                                 |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Knowledge**     | MMLU (57 subjects), GPQA (graduate-level), SuperGPQA (285 disciplines), OpenBookQA, HLE (Humanity's Last Exam - 2,500 questions from 1,000+ experts), HLE_text (text-only version)                                                                                         |
-| **Coding**        | HumanEval (164 problems)                                                                                                                                                                                                                                                   |
+| **Coding**        | HumanEval (164 problems), SWE-bench (2,294 tasks), SWE-bench-Verified (human-validated), SWE-bench-Lite (300 tasks)                                                                                                                                                        |
 | **Math**          | AIME 2023-2025, HMMT Feb 2023-2025, BRUMO 2025, MATH (competition-level problems), MATH-500 (challenging subset), MGSM (multilingual grade school math), MGSM_en (English), MGSM_latin (5 languages), MGSM_non_latin (6 languages)                                         |
 | **Reasoning**     | SimpleQA (factuality), MuSR (multi-step reasoning), DROP (discrete reasoning over paragraphs), MMMU (multi-modal reasoning with 30+ subjects)                                                                                                                              |
 | **Long Context**  | OpenAI MRCR (multiple needle retrieval), OpenAI MRCR_2n (2 needle), OpenAI MRCR_4 (4 needle), OpenAI MRCR_8n (8 needle)                                                                                                                                                    |
 | **Healthcare**    | HealthBench (open-ended healthcare eval), HealthBench_hard (challenging variant), HealthBench_consensus (consensus variant)                                                                                                                                                |
 | **Cybersecurity** | CTI-Bench (complete cyber threat intelligence suite), CTI-Bench ATE (MITRE ATT&CK technique extraction), CTI-Bench MCQ (knowledge questions on CTI standards and best practices), CTI-Bench RCM (CVE to CWE vulnerability mapping), CTI-Bench VSP (CVSS score calculation) |
+
+### SWE-bench
+
+- **SWE-bench**: Full benchmark (2,294 tasks)
+- **SWE-bench-Verified**: Human-validated subset
+- **SWE-bench-Lite**: Streamlined version (300 tasks)
+
+See: https://github.com/SWE-bench/SWE-bench
 
 ## Configuration
 

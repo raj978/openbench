@@ -98,6 +98,15 @@ def crusoe() -> Type[ModelAPI]:
 
     return CrusoeAPI
 
+    from openbench.datasets.swebench import SWEbenchDataset
+    from openbench.evals.swebench import SWEbenchEval
+    
+    # Register SWE-bench datasets
+    for variant in ["full", "verified", "lite"]:
+        dataset_name = f"swe-bench-{variant}"
+        eval_name = f"swe-bench-{variant}"
+        DATASETS[dataset_name] = lambda variant=variant: SWEbenchDataset(variant=variant)
+        EVALS[eval_name] = lambda variant=variant: SWEbenchEval(variant=variant)
 
 @modelapi(name="deepinfra")
 def deepinfra() -> Type[ModelAPI]:
