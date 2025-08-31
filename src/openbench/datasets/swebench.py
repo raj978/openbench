@@ -42,7 +42,9 @@ Please provide your solution as a code patch that can be applied to fix the issu
     )
 
 
-def get_swebench_dataset(variant: str = "lite", data_dir: Optional[str] = None) -> Dataset:
+def get_swebench_dataset(
+    variant: str = "lite", data_dir: Optional[str] = None
+) -> Dataset:
     """Load SWE-bench dataset for evaluation.
 
     Args:
