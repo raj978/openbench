@@ -98,15 +98,6 @@ def crusoe() -> Type[ModelAPI]:
 
     return CrusoeAPI
 
-    from openbench.datasets.swebench import SWEbenchDataset
-    from openbench.evals.swebench import SWEbenchEval
-    
-    # Register SWE-bench datasets
-    for variant in ["full", "verified", "lite"]:
-        dataset_name = f"swe-bench-{variant}"
-        eval_name = f"swe-bench-{variant}"
-        DATASETS[dataset_name] = lambda variant=variant: SWEbenchDataset(variant=variant)
-        EVALS[eval_name] = lambda variant=variant: SWEbenchEval(variant=variant)
 
 @modelapi(name="deepinfra")
 def deepinfra() -> Type[ModelAPI]:
@@ -244,3 +235,4 @@ from .evals.matharena.brumo_2025.brumo_2025 import brumo_2025  # noqa: F401, E40
 from .evals.matharena.hmmt_feb_2023.hmmt_feb_2023 import hmmt_feb_2023  # noqa: F401, E402
 from .evals.matharena.hmmt_feb_2024.hmmt_feb_2024 import hmmt_feb_2024  # noqa: F401, E402
 from .evals.matharena.hmmt_feb_2025.hmmt_feb_2025 import hmmt_feb_2025  # noqa: F401, E402
+from .evals.swebench import swe_bench_lite, swe_bench_verified, swe_bench_full  # noqa: F401, E402

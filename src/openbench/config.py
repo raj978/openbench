@@ -865,6 +865,48 @@ BENCHMARKS = {
         function_name="mmmu_sociology",
         is_alpha=False,
     ),
+    "swe_bench_lite": BenchmarkMetadata(
+        name="SWE-bench Lite",
+        description="SWE-bench Lite: A smaller, curated subset of 300 instances from SWE-bench for evaluating language models on software engineering tasks",
+        category="core",
+        tags=[
+            "code-generation",
+            "software-engineering",
+            "debugging",
+            "patch-generation",
+        ],
+        module_path="openbench.evals.swebench",
+        function_name="swe_bench_lite",
+        is_alpha=False,
+    ),
+    "swe_bench_verified": BenchmarkMetadata(
+        name="SWE-bench Verified",
+        description="SWE-bench Verified: A subset of SWE-bench instances that have been human-verified for quality",
+        category="core",
+        tags=[
+            "code-generation",
+            "software-engineering",
+            "debugging",
+            "patch-generation",
+        ],
+        module_path="openbench.evals.swebench",
+        function_name="swe_bench_verified",
+        is_alpha=False,
+    ),
+    "swe_bench_full": BenchmarkMetadata(
+        name="SWE-bench Full",
+        description="SWE-bench Full: The complete SWE-bench dataset with over 2,000 instances for evaluating language models on software engineering tasks",
+        category="core",
+        tags=[
+            "code-generation",
+            "software-engineering",
+            "debugging",
+            "patch-generation",
+        ],
+        module_path="openbench.evals.swebench",
+        function_name="swe_bench_full",
+        is_alpha=False,
+    ),
 }
 
 

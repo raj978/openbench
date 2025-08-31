@@ -1,32 +1,68 @@
-# SWE-bench evaluation integration for OpenBench
-# Reference: https://github.com/SWE-bench/SWE-bench
+"""SWE-bench evaluations for OpenBench.
 
-from openbench.evals import Eval
-from openbench.datasets.swebench import SWEbenchDataset
+SWE-bench is a benchmark for evaluating Language Models on Software Engineering tasks.
+It consists of real-world GitHub issues and their corresponding fixes.
 
-class SWEbenchEval(Eval):
+Reference: https://github.com/princeton-nlp/SWE-bench
+"""
+
+from inspect_ai import task, Task
+from inspect_ai.solver import generate
+from inspect_ai.model import GenerateConfig
+from openbench.datasets.swebench import get_swe_bench_dataset
+from openbench.scorers.swe_bench import swe_bench_scorer
+
+
+@task
+def swe_bench_lite() -> Task:
+    """SWE-bench Lite evaluation task.
+
+    A smaller, curated subset of 300 instances from SWE-bench for faster evaluation.
     """
-    SWE-bench evaluation logic for OpenBench.
+    return Task(
+        dataset=get_swe_bench_dataset(variant="lite"),
+        solver=[generate()],
+        scorer=swe_bench_scorer(),
+        name="swe-bench-lite",
+        config=GenerateConfig(
+            temperature=0.2,
+            max_tokens=2048,
+        ),
+    )
+
+
+@task
+def swe_bench_verified() -> Task:
+    """SWE-bench Verified evaluation task.
+
+    A subset of SWE-bench instances that have been human-verified for quality.
     """
-    def __init__(self, variant: str = "full", data_dir: str = None):
-        self.dataset = SWEbenchDataset(variant=variant, data_dir=data_dir)
-        self.variant = variant
+    return Task(
+        dataset=get_swe_bench_dataset(variant="verified"),
+        solver=[generate()],
+        scorer=swe_bench_scorer(),
+        name="swe-bench-verified",
+        config=GenerateConfig(
+            temperature=0.2,
+            max_tokens=2048,
+        ),
+    )
 
-    def evaluate(self, model, *args, **kwargs):
-        results = []
-        for task in self.dataset:
-            # Each task contains: repo, commit, patch, test, etc.
-            # The model is expected to generate a patch or code change.
-            # Here, we just pass the task to the model and collect the result.
-            result = model.solve_swebench_task(task)
-            results.append({
-                "task_id": task.get("instance_id"),
-                "success": result.get("success", False),
-                "model_output": result.get("output"),
-                "expected": task.get("patch")
-            })
-        return results
 
-    @property
-    def name(self):
-        return f"swe-bench-{self.variant}"
+@task
+def swe_bench_full() -> Task:
+    """SWE-bench Full evaluation task.
+
+    The complete SWE-bench dataset with over 2,000 instances.
+    This is computationally intensive and may take a long time to run.
+    """
+    return Task(
+        dataset=get_swe_bench_dataset(variant="full"),
+        solver=[generate()],
+        scorer=swe_bench_scorer(),
+        name="swe-bench-full",
+        config=GenerateConfig(
+            temperature=0.2,
+            max_tokens=2048,
+        ),
+    )
