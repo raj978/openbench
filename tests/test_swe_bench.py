@@ -1,7 +1,7 @@
 """Tests for SWE-bench implementation."""
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 from inspect_ai.solver import TaskState
 from inspect_ai.model import ModelOutput
 from openbench.scorers.swe_bench import (
@@ -20,7 +20,7 @@ class TestSWEBenchScorer:
     async def test_swe_bench_scorer_with_code(self):
         """Test scorer with a completion containing code."""
         scorer = swe_bench_scorer()
-        
+
         # Mock state with code in completion
         state = MagicMock(spec=TaskState)
         state.output = MagicMock(spec=ModelOutput)
@@ -32,11 +32,11 @@ class TestSWEBenchScorer:
             return "fixed"
         ```
         """
-        
+
         target = "def fix_function():\n    return 'fixed'"
-        
+
         score = await scorer(state, target)
-        
+
         assert score.value in ["C", "I"]  # CORRECT or INCORRECT
         assert "fix_function" in score.answer
 
@@ -44,15 +44,15 @@ class TestSWEBenchScorer:
     async def test_swe_bench_scorer_no_code(self):
         """Test scorer with completion containing no code."""
         scorer = swe_bench_scorer()
-        
+
         state = MagicMock(spec=TaskState)
         state.output = MagicMock(spec=ModelOutput)
         state.output.completion = "This is just text with no code."
-        
+
         target = "def some_function(): pass"
-        
+
         score = await scorer(state, target)
-        
+
         assert score.value == "I"  # INCORRECT
         assert "No code changes found" in score.explanation
 
@@ -70,7 +70,7 @@ class TestCodeExtraction:
             print("world")
         ```
         """
-        
+
         result = extract_code_from_completion(completion)
         assert "def hello():" in result
         assert "print" in result
@@ -85,7 +85,7 @@ class TestCodeExtraction:
         -     return False
         ```
         """
-        
+
         result = extract_code_from_completion(completion)
         assert "+ def new_function():" in result
         assert "- def old_function():" in result
@@ -93,7 +93,7 @@ class TestCodeExtraction:
     def test_extract_code_no_blocks(self):
         """Test extracting code when no code blocks present."""
         completion = "This is just text without any code blocks."
-        
+
         result = extract_code_from_completion(completion)
         assert result == ""
 
@@ -108,7 +108,7 @@ class TestCodeExtraction:
         - def removed_function():
         -     return "old"
         """
-        
+
         result = extract_code_from_completion(completion)
         assert "+ def added_function():" in result
 
@@ -120,7 +120,7 @@ class TestPatchSimilarity:
         """Test similarity of identical patches."""
         patch1 = "def hello(): print('world')"
         patch2 = "def hello(): print('world')"
-        
+
         similarity = calculate_patch_similarity(patch1, patch2)
         assert similarity == 1.0
 
@@ -128,7 +128,7 @@ class TestPatchSimilarity:
         """Test similarity of completely different patches."""
         patch1 = "def hello(): print('world')"
         patch2 = "class MyClass: pass"
-        
+
         similarity = calculate_patch_similarity(patch1, patch2)
         assert 0.0 <= similarity <= 1.0
 
@@ -136,7 +136,7 @@ class TestPatchSimilarity:
         """Test similarity of similar patches."""
         patch1 = "def hello(): print('world')"
         patch2 = "def hello(): print('universe')"
-        
+
         similarity = calculate_patch_similarity(patch1, patch2)
         assert 0.3 <= similarity <= 0.9  # Should be similar but not identical
 
@@ -144,7 +144,7 @@ class TestPatchSimilarity:
         """Test similarity with empty patches."""
         similarity = calculate_patch_similarity("", "")
         assert similarity == 0.0
-        
+
         similarity = calculate_patch_similarity("def hello(): pass", "")
         assert similarity == 0.0
 
@@ -158,9 +158,9 @@ class TestCodeNormalization:
         def hello():
             print("world")
         """
-        
+
         normalized = normalize_code(code)
-        assert normalized == "def hello(): print(\"world\")"
+        assert normalized == 'def hello(): print("world")'
 
     def test_extract_names(self):
         """Test name extraction from code."""
@@ -172,7 +172,7 @@ class TestCodeNormalization:
         class MyClass:
             pass
         """
-        
+
         names = extract_names(code)
         assert "my_function" in names
         assert "MyClass" in names
