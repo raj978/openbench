@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.2](https://github.com/groq/openbench/compare/v0.4.1...v0.4.2) (2025-08-31)
+
+
+### Features
+
+* add local openbench implementation of groq provider in inspect ([#131](https://github.com/groq/openbench/issues/131)) ([52aea35](https://github.com/groq/openbench/commit/52aea3510f03cd49d0fb66c3e6789f61939a7ee0))
+* change default model to groq/openai/gpt-oss-20b ([#138](https://github.com/groq/openbench/issues/138)) ([8f7f42f](https://github.com/groq/openbench/commit/8f7f42f1a3faba9dafa535f135a6a1638592ed4f))
+* configure release-please for pre-v1.0 version bumping ([#133](https://github.com/groq/openbench/issues/133)) ([c432934](https://github.com/groq/openbench/commit/c4329343e059f6dd8c9a664a67431aba8d8fb853))
+* **eval:** add support for json output ([#14](https://github.com/groq/openbench/issues/14)) ([f335418](https://github.com/groq/openbench/commit/f3354188fcbd35067072da8840a444188a3a0221))
+* graphwalks token filter ([#115](https://github.com/groq/openbench/issues/115)) ([e38658c](https://github.com/groq/openbench/commit/e38658c916d987bf8074910dfdefefb88e97faf6))
+
+
+### Documentation
+
+* **readme:** clarify benchmark case-sensitivity and grader requirements ([#135](https://github.com/groq/openbench/issues/135)) ([c34a5a3](https://github.com/groq/openbench/commit/c34a5a362ec6764909258350f383ec561274b5bb))
+
 ## [0.4.1](https://github.com/groq/openbench/compare/v0.4.0...v0.4.1) (2025-08-29)
 
 
