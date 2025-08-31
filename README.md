@@ -136,6 +136,22 @@ Here are the currently available benchmarks. For an up-to-date list use `bench l
 - **SWE-bench-Verified**: Human-validated subset
 - **SWE-bench-Lite**: Streamlined version (300 tasks)
 
+**Usage**: Download the datasets from [SWE-bench repository](https://github.com/SWE-bench/SWE-bench) and place the `.jsonl` files in `./swebench_data` directory:
+
+```bash
+# Quick test with SWE-bench Lite (300 tasks)
+bench eval swebench_lite --model groq/llama-3.3-70b-versatile --limit 5
+
+# Evaluate with different variants
+bench eval swebench_full --model your_model          # Full dataset
+bench eval swebench_verified --model your_model      # Verified subset
+bench eval swebench --model your_model               # Configurable (defaults to lite)
+
+# Specify custom data directory
+export SWEBENCH_DATA_DIR=/path/to/your/data
+bench eval swebench_lite --model your_model
+```
+
 See: https://github.com/SWE-bench/SWE-bench
 
 ## Configuration
