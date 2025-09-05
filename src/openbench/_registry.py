@@ -203,6 +203,8 @@ from .evals.simpleqa import simpleqa  # noqa: F401, E402
 from .evals.supergpqa import supergpqa  # noqa: F401, E402
 from .evals.mmmu import (  # noqa: F401, E402
     mmmu,
+    mmmu_mcq,
+    mmmu_open,
     mmmu_accounting,
     mmmu_agriculture,
     mmmu_architecture_and_engineering,
@@ -234,6 +236,7 @@ from .evals.mmmu import (  # noqa: F401, E402
     mmmu_public_health,
     mmmu_sociology,
 )
+from .evals.mmmu_pro import mmmu_pro, mmmu_pro_vision  # noqa: F401, E402
 
 # MathArena benchmarks
 from .evals.matharena.aime_2023_I.aime_2023_I import aime_2023_I  # noqa: F401, E402
